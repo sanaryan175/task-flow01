@@ -18,6 +18,7 @@ import { CSS } from '@dnd-kit/utilities';
 
 import useTasks from '../hooks/useTasks';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 
 import FilterBar from '../components/FilterBar';
 import TaskCard from '../components/TaskCard';
@@ -176,12 +177,112 @@ function MoonIcon() {
 }
 
 // ---------------------------------------------------------------------------
+// User dropdown menu in navbar
+// ---------------------------------------------------------------------------
+
+function UserMenu({ user, onLogout }) {
+  const [open, setOpen] = useState(false);
+
+  // Close on click outside
+  const ref = useRef(null);
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const initial = user?.name?.charAt(0).toUpperCase() ?? '?';
+
+  return (
+    <div className="relative" ref={ref}>
+      {/* Avatar button */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label="Open user menu"
+        aria-expanded={open}
+        className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl
+                   bg-indigo-50 dark:bg-indigo-900/30
+                   border border-indigo-100 dark:border-indigo-700/50
+                   hover:bg-indigo-100 dark:hover:bg-indigo-900/50
+                   active:scale-95 transition-all
+                   focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      >
+        {/* User icon circle with initial */}
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600
+                        flex items-center justify-center text-white text-xs font-bold shadow-sm">
+          {initial}
+        </div>
+        <span className="text-xs font-semibold text-indigo-700 dark:text-indigo-300 max-w-[90px] truncate hidden sm:block">
+          {user?.name}
+        </span>
+        {/* Chevron */}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className={`h-3 w-3 text-indigo-400 transition-transform duration-200 hidden sm:block ${open ? 'rotate-180' : ''}`}
+          fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <div className="absolute right-0 mt-2 w-60 rounded-2xl bg-white dark:bg-gray-800
+                        border border-gray-100 dark:border-gray-700/60
+                        shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50
+                        animate-scale-in z-50 overflow-hidden">
+          {/* User info */}
+          <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700/60">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600
+                              flex items-center justify-center text-white text-sm font-bold shadow-md shrink-0">
+                {initial}
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">{user?.name}</p>
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{user?.email}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="p-2">
+            <button
+              type="button"
+              onClick={() => { setOpen(false); onLogout(); }}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+                         text-rose-600 dark:text-rose-400
+                         hover:bg-rose-50 dark:hover:bg-rose-900/20
+                         active:scale-[0.98] transition-all
+                         focus:outline-none focus:ring-2 focus:ring-rose-400"
+            >
+              {/* Logout icon */}
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              Sign Out
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+UserMenu.propTypes = {
+  user:     PropTypes.shape({ name: PropTypes.string, email: PropTypes.string }).isRequired,
+  onLogout: PropTypes.func.isRequired,
+};
+
+// ---------------------------------------------------------------------------
 // Home page
 // ---------------------------------------------------------------------------
 
 function Home() {
   const { tasks, loading, error, fetchTasks, addTask, editTask, removeTask, reorderTasks } = useTasks();
   const { showToast } = useToast();
+  const { user, logout } = useAuth();
 
   const [isModalOpen, setIsModalOpen]   = useState(false);
   const [editingTask, setEditingTask]   = useState(null);
@@ -292,6 +393,9 @@ function Home() {
                 <span aria-hidden="true" className="text-base leading-none">+</span>
                 New Task
               </button>
+
+              {/* User dropdown menu */}
+              <UserMenu user={user} onLogout={logout} />
             </div>
           </div>
         </div>
