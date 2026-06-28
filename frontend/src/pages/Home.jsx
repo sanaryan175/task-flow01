@@ -480,9 +480,7 @@ function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-12 pb-6 text-center text-[11px] text-gray-300 dark:text-gray-700">
-        TaskFlow — built with React &amp; Express
-      </footer>
+      <footer className="mt-12 pb-6" />
 
       {/* Modal */}
       <Modal isOpen={isModalOpen} onClose={closeModal} title={editingTask ? '✏️ Edit Task' : '✨ New Task'}>

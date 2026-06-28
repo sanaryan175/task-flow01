@@ -197,10 +197,3 @@ npm test
 | Backend | [Render](https://render.com) — set all env vars in the dashboard |
 | Frontend | [Vercel](https://vercel.com) — set `VITE_API_BASE_URL` in project settings |
 
-> **Important:** Never commit `.env` files. Set environment variables directly in the hosting dashboard.
-
----
-
-## License
-
-MIT
