@@ -1,0 +1,32 @@
+{
+  "name": "task-manager-backend",
+  "version": "1.0.0",
+  "description": "Node.js/Express/MongoDB REST API for the Task Manager App",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "jest --runInBand"
+  },
+  "dependencies": {
+    "cors": "2.8.5",
+    "dotenv": "16.4.5",
+    "express": "4.19.2",
+    "mongoose": "8.4.1"
+  },
+  "devDependencies": {
+    "@jest/globals": "29.7.0",
+    "fast-check": "3.19.0",
+    "jest": "29.7.0",
+    "mongodb-memory-server": "9.3.0",
+    "supertest": "7.0.0"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/__tests__/**/*.test.js",
+      "**/*.test.js"
+    ]
+  }
+}
