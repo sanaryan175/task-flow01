@@ -7,6 +7,8 @@ const express = require('express');
 const cors = require('cors');
 
 const taskRouter = require('./routes/taskRoutes');
+const authRouter = require('./routes/authRoutes');
+const protect = require('./middleware/protect');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -18,8 +20,11 @@ app.use(express.json({ limit: '1mb' }));
 const corsOrigin = process.env.FRONTEND_URL || '*';
 app.use(cors({ origin: corsOrigin }));
 
-// Mount task router
-app.use('/api/tasks', taskRouter);
+// Public routes — no auth needed
+app.use('/api/auth', authRouter);
+
+// Protected routes — JWT required
+app.use('/api/tasks', protect, taskRouter);
 
 // Global error handler — must be last
 app.use(errorHandler);
